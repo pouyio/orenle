@@ -1,0 +1,18 @@
+{
+  "name": "orenle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "vercel dev -d"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/text-to-speech": "^2.3.0",
+    "@now/node": "^1.4.1",
+    "dotenv": "^10.0.0",
+    "pug": "^2.0.4"
+  }
+}
