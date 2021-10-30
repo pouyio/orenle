@@ -14,4 +14,5 @@ Acces the api in [`/audio`](https://orenle.vercel.app/audio):
 - By default the current weekday is used.
 - Add [`/audio?q=something`](https://orenle.vercel.app/audio?q=something) to customize.
 
+---
 ***PRs welcome***
