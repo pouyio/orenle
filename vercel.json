@@ -1,12 +1,12 @@
 {
-  "routes": [
+  "rewrites": [
     {
-      "src": "/audio",
-      "dest": "/api/audio"
+      "source": "/audio",
+      "destination": "/api/audio"
     },
     {
-      "src": "/",
-      "dest": "/api/index"
+      "source": "/",
+      "destination": "/api/index"
     }
   ]
 }
