@@ -1,10 +1,9 @@
 require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
-const textToSpeech = require("@google-cloud/text-to-speech");
-const credentials = require("./assets/credentials");
-const client = new textToSpeech.TextToSpeechClient({ credentials });
 const today = require("./src/util");
+
+const URL = "https://play.ht/api/v2/tts";
 
 const readFilePromise = (path) => {
   return new Promise((resolve, reject) => {
@@ -18,36 +17,61 @@ const readFilePromise = (path) => {
   });
 };
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   try {
-    res.setHeader("Content-Type", "audio/mpeg");
+    const headers = {
+      accept: "application/json",
+      "content-type": "application/json",
+      AUTHORIZATION: process.env.AUTHORIZATION,
+      "X-USER-ID": process.env.USER_ID,
+    };
+
     const q = req.query.q || today();
 
     const promises = [
       readFilePromise(path.resolve(__dirname + "/assets/orenle.mp3")),
-      client.synthesizeSpeech({
-        input: { text: q },
-        voice: { languageCode: "es-ES", ssmlGender: "NEUTRAL" },
-        audioConfig: { audioEncoding: "MP3", sampleRateHertz: 44100 },
-      }),
       readFilePromise(path.resolve(__dirname + "/assets/yeah.mp3")),
+      fetch(URL, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          text: q,
+          voice: process.env.VOICE_ID_JSON,
+          quality: "medium",
+          output_format: "mp3",
+          speed: 1,
+          sample_rate: 24000,
+        }),
+      })
+        .then((res) => res.json())
+        .then(
+          (json) =>
+            json._links.find((l) => l.contentType === "audio/mpeg")?.href
+        ),
     ];
 
-    const [orenleBuffer, [response], yeahBuffer] = await Promise.all(promises);
-
-    res.setHeader(
-      "Content-Length",
-      orenleBuffer.length + response.audioContent.length + yeahBuffer.length
+    const [orenleBuffer, yeahBuffer, ttsJobAudioUrl] = await Promise.all(
+      promises
     );
+
+    const response = await fetch(ttsJobAudioUrl, {
+      headers,
+    });
+
+    const audioData = await response.arrayBuffer();
 
     const bigBuffer = Buffer.concat([
       orenleBuffer,
-      response.audioContent,
+      Buffer.from(audioData),
       yeahBuffer,
     ]);
 
+    res.setHeader("Content-Type", "audio/mpeg");
+    res.setHeader("Content-Length", bigBuffer.length);
+
     res.end(bigBuffer);
   } catch (error) {
-    res.send("error");
+    console.log(error);
+    res.send("There was an error");
   }
-};
+}
