@@ -1,12 +1,8 @@
 {
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/audio",
-      "destination": "/api/audio"
-    },
-    {
-      "source": "/",
-      "destination": "/api/index"
+      "source": "/:path*",
+      "destination": "https://orenle.fly.dev/:path*"
     }
   ]
 }

@@ -2,16 +2,19 @@
   "name": "orenle",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "app.ts",
+  "type": "module",
   "scripts": {
-    "start": "vercel dev -d"
+    "start": "bun api/index.ts",
+    "dev": "bun --hot api/index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@now/node": "^1.4.1",
-    "dotenv": "^10.0.0",
     "pug": "^2.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.0"
   }
 }
