@@ -8,4 +8,4 @@ const weekday = [
   "sábado",
 ];
 
-module.exports = () => weekday[new Date().getDay()];
+export default () => weekday[new Date().getDay()];
