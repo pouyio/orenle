@@ -1,9 +1,8 @@
-require("dotenv").config();
-const fs = require("fs");
-const path = require("path");
-const today = require("./src/util");
+import fs from "fs";
+import path from "path";
+import today from "./src/util";
 
-const URL = "https://play.ht/api/v2/tts";
+const API_URL = "https://play.ht/api/v2/tts";
 
 const readFilePromise = (path) => {
   return new Promise((resolve, reject) => {
@@ -17,21 +16,21 @@ const readFilePromise = (path) => {
   });
 };
 
-export default async function handler(req, res) {
+export const handler = async (req) => {
   try {
-    const headers = {
+    const headers: HeadersInit = {
       accept: "application/json",
       "content-type": "application/json",
-      AUTHORIZATION: process.env.AUTHORIZATION,
-      "X-USER-ID": process.env.USER_ID,
+      AUTHORIZATION: process.env.AUTHORIZATION ?? "",
+      "X-USER-ID": process.env.USER_ID ?? "",
     };
 
-    const q = req.query.q || today();
+    const q = new URL(req.url).searchParams.get("q") ?? today();
 
     const promises = [
       readFilePromise(path.resolve(__dirname + "/assets/orenle.mp3")),
       readFilePromise(path.resolve(__dirname + "/assets/yeah.mp3")),
-      fetch(URL, {
+      fetch(API_URL, {
         method: "POST",
         headers,
         body: JSON.stringify({
@@ -66,12 +65,14 @@ export default async function handler(req, res) {
       yeahBuffer,
     ]);
 
-    res.setHeader("Content-Type", "audio/mpeg");
-    res.setHeader("Content-Length", bigBuffer.length);
-
-    res.end(bigBuffer);
+    return new Response(bigBuffer, {
+      headers: {
+        "Content-Type": "audio/mpeg",
+        "Content-Length": "" + bigBuffer.length,
+      },
+    });
   } catch (error) {
     console.log(error);
-    res.send("There was an error");
+    return new Response("There was an error");
   }
-}
+};
