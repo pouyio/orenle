@@ -18,6 +18,9 @@ Bun.serve({
     if (url.pathname === "/audio") {
       return handler(req);
     }
+    if (url.pathname === "/orenle.png") {
+      return new Response(Bun.file("./public/orenle.png"));
+    }
     return new Response(`404!`);
   },
 });
