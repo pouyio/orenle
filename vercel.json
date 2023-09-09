@@ -1,8 +1,0 @@
-{
-  "redirects": [
-    {
-      "source": "/:path*",
-      "destination": "https://orenle.fly.dev/:path*"
-    }
-  ]
-}
